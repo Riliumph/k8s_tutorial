@@ -1,0 +1,61 @@
+FROM mcr.microsoft.com/devcontainers/base:2-debian12 AS toolchain
+
+ENV DEBIAN_FRONTEND="noninteractive"
+RUN apt-get -qq update && \
+    apt-get -qq -y install --no-install-recommends \
+    ca-certificates
+
+ARG KUBECTL_VERSION=v1.31.0
+ARG KUBECTL_URL=https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
+RUN curl -fsSL "${KUBECTL_URL}" -o kubectl && \
+    install -m 755 kubectl /usr/local/bin/kubectl && \
+    kubectl completion bash > /etc/bash_completion.d/kubectl
+
+ARG MINIKUBE_VERSION=v1.36.0
+ARG MINIKUBE_URL=https://storage.googleapis.com/minikube/releases/${MINIKUBE_VERSION}/minikube-linux-amd64
+RUN curl -fsSL "${MINIKUBE_URL}" -o minikube && \
+    install -m 755 minikube /usr/local/bin/minikube && \
+    minikube completion bash > /etc/bash_completion.d/minikube
+
+ARG HELM_VERSION=v3.17.3
+ARG HELM_URL=https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz
+RUN curl -fsSL "${HELM_URL}" -o helm.tar.gz && \
+    tar -xzf helm.tar.gz && \
+    install -m 755 linux-amd64/helm /usr/local/bin/helm && \
+    helm completion bash > /etc/bash_completion.d/helm
+
+# hadolint
+ARG HADOLINT_URL="https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64"
+RUN curl -fsSL "${HADOLINT_URL}" -o hadolint && \
+    install -m 766 hadolint /usr/local/bin/hadolint
+# diff-highlighta
+WORKDIR /usr/share/doc/git/contrib/diff-highlight
+RUN make
+
+FROM mcr.microsoft.com/devcontainers/base:2-debian12
+
+RUN DEBIAN_FRONTEND=noninteractive \
+    apt-get -qq update\
+    && apt-get -y install --no-install-recommends \
+    # utilities
+    peco\
+    silversearcher-ag\
+    vim\
+    # network tools
+    telnet\
+    netcat-openbsd\
+    && apt-get clean\
+    && rm -rf /var/lib/apt/lists/*
+
+# k8s
+COPY --from=toolchain /usr/local/bin/kubectl /usr/local/bin/kubectl
+COPY --from=toolchain /etc/bash_completion.d/kubectl /etc/bash_completion.d/kubectl
+COPY --from=toolchain /usr/local/bin/minikube /usr/local/bin/minikube
+COPY --from=toolchain /etc/bash_completion.d/minikube /etc/bash_completion.d/minikube
+COPY --from=toolchain /usr/local/bin/helm /usr/local/bin/helm
+COPY --from=toolchain /etc/bash_completion.d/helm /etc/bash_completion.d/helm
+
+# hadolint for docker
+COPY --from=toolchain /usr/local/bin/hadolint /usr/local/bin/hadolint
+# git
+COPY --from=toolchain /usr/share/doc/git/contrib/diff-highlight/diff-highlight /usr/local/bin/diff-highlight
