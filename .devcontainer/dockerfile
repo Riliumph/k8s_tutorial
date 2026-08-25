@@ -27,7 +27,7 @@ RUN curl -fsSL "${HELM_URL}" -o helm.tar.gz && \
 # hadolint
 ARG HADOLINT_URL="https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64"
 RUN curl -fsSL "${HADOLINT_URL}" -o hadolint && \
-    install -m 766 hadolint /usr/local/bin/hadolint
+    install -m 755 hadolint /usr/local/bin/hadolint
 # diff-highlighta
 WORKDIR /usr/share/doc/git/contrib/diff-highlight
 RUN make
