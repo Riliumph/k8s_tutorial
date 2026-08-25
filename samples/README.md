@@ -28,16 +28,16 @@ kubectl apply -f samples/app/
 ## 確認コマンド
 
 ```bash
-kubectl get namespace sample-app
-kubectl get deployment -n sample-app
-kubectl get service -n sample-app
-kubectl get pods -n sample-app -o wide
+kubectl get namespace sample-app-namespace
+kubectl get deployment sample-app-deployment -n sample-app-namespace
+kubectl get service sample-app-service -n sample-app-namespace
+kubectl get pods -n sample-app-namespace -o wide
 ```
 
 ## アクセス確認
 
 ```bash
-minikube service sample-app -n sample-app -p dev --url
+minikube service sample-app-service -n sample-app-namespace -p dev --url
 ```
 
 curl でも確認できます。

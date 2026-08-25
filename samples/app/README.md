@@ -1,12 +1,33 @@
 # Sample App
 
-このサンプルは、名前空間 `sample-app` を作成し、Nginx を 2 レプリカで起動する最小構成です。
+このサンプルは、名前空間 `sample-app-namespace` を作成し、Nginx を 2 レプリカで起動する最小構成です。
+
+## ディレクトリ
+
+```bash
+app
+├ namespace.yaml
+├ deployment.yaml
+├ service.yaml
+└ etc...
+```
+
+- namespace.yaml  
+  Namespaceを定義しているファイル。  
+  このファイルを適用することでクラスタ内に定義されたNamespaceが作成される。  
+  dev/stg/prdなどを定義する。
+- deployment.yaml  
+  Deployment（`sample-app-deployment`）を定義しているファイル。  
+  どのコンテナ（`web-nginx-container`）を何個起動するかなどが記載されている。
+- service.yaml  
+  Service（`sample-app-service`）を定義しているファイル。  
+  Podへアクセスするためのポートなどが記載されている。
 
 ## 構成
 
-- Namespace: `sample-app`
-- Deployment: `sample-app`
-- Service: `sample-app`
+- Namespace: `sample-app-namespace`
+- Deployment: `sample-app-deployment`
+- Service: `sample-app-service`
 - Image: `nginx:1.27.2-alpine`
 
 ## 1. Minikube を起動
@@ -34,10 +55,10 @@ kubectl apply -f samples/app/
 ## 3. 確認
 
 ```bash
-kubectl get namespace sample-app
-kubectl get deployment -n sample-app
-kubectl get service -n sample-app
-kubectl get pods -n sample-app -o wide
+kubectl get namespace sample-app-namespace
+kubectl get deployment sample-app-deployment -n sample-app-namespace
+kubectl get service sample-app-service -n sample-app-namespace
+kubectl get pods -n sample-app-namespace -o wide
 ```
 
 ## 4. アクセス確認
@@ -45,7 +66,7 @@ kubectl get pods -n sample-app -o wide
 NodePort を使って確認します。
 
 ```bash
-minikube service sample-app -n sample-app -p dev --url
+minikube service sample-app-service -n sample-app-namespace -p dev --url
 ```
 
 curl でも確認できます。
