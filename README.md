@@ -27,3 +27,28 @@ $ minikube delete -p dev
 ```
 
 `-p`がなければ、デフォルトで`minikube`が付与される。
+
+## ダッシュボード
+
+`dashboard`の所有を確認する。
+
+```console
+$ minikube addons list
+|-----------------------------|--------------------------------|
+|         ADDON NAME          |           MAINTAINER           |
+|-----------------------------|--------------------------------|
+| dashboard                   | Kubernetes                     |
+...
+```
+
+```console
+$ minikube dashboard -p dev
+🤔  Verifying dashboard health ...
+🚀  Launching proxy ...
+🤔  Verifying proxy health ...
+🎉  Opening http://127.0.0.1:46629/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/ in your default browser...
+👉  http://127.0.0.1:46629/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/
+```
+
+表示されたURLをブラウザで開く。  
+なお、ctrl+cで閉じるとページが飛ぶので厳禁。

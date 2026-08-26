@@ -1,0 +1,11 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "minikube": true,
+        "kubectl apply": true,
+        "kubectl get": true,
+        "true": true,
+        "kubectl rollout": true,
+        "kubectl describe": true,
+        "printf": true
+    }
+}

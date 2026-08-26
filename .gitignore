@@ -1,0 +1,9 @@
+# Draw.io
+*.bkp
+*.dtmp
+
+# log
+*.log
+
+# devcontainer
+*-lock.json
