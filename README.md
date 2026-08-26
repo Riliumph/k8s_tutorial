@@ -3,10 +3,11 @@
 ## 起動方法
 
 ```console
-$ minikube start --driver=docker -p dev
+$ minikube start --driver=docker -p <profile-name>
 ```
 
-`-p`がなければ、デフォルトで`minikube`が付与される。
+デフォルトでプロファイル名に`minikube`が付与される。  
+任意のプロファイル名をつけたい場合は`-p xxx`とする。
 
 状態確認
 
@@ -23,10 +24,8 @@ kubeconfig: Configured
 ## 環境の削除
 
 ```console
-$ minikube delete -p dev
+$ minikube delete -p <profile-name>
 ```
-
-`-p`がなければ、デフォルトで`minikube`が付与される。
 
 ## ダッシュボード
 
@@ -34,15 +33,15 @@ $ minikube delete -p dev
 
 ```console
 $ minikube addons list
-|-----------------------------|--------------------------------|
-|         ADDON NAME          |           MAINTAINER           |
-|-----------------------------|--------------------------------|
-| dashboard                   | Kubernetes                     |
+|------------------|------------------|
+|    ADDON NAME    |    MAINTAINER    |
+|------------------|------------------|
+| dashboard        | Kubernetes       |
 ...
 ```
 
 ```console
-$ minikube dashboard -p dev
+$ minikube dashboard -p <profile-name>
 🤔  Verifying dashboard health ...
 🚀  Launching proxy ...
 🤔  Verifying proxy health ...
@@ -51,4 +50,4 @@ $ minikube dashboard -p dev
 ```
 
 表示されたURLをブラウザで開く。  
-なお、ctrl+cで閉じるとページが飛ぶので厳禁。
+なお、フロントプロセスとして起動するのでctrl+cで終了すると、ページに繋がらなくなるので注意。

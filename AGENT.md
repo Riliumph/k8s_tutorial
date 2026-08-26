@@ -21,7 +21,7 @@
 
 ---
 
-# Goal
+## Goal
 
 ユーザーから「サンプルを作って」と依頼された場合は以下を実施してください。
 
@@ -32,24 +32,30 @@
 
 ---
 
-# Directory Rules
+## Directory Rules
 
-サンプルは以下へ配置します。
+以下のディレクトリ構成である。
 
-samples/
+```console
+root/
+└─ apps/
+   ├─ sample/
+   └─ xxx/
+```
 
-例
-
-samples/
-├── nginx/
-├── mysql/
-└── app/
+- root/  
+　READMEにはプロジェクト全体のことや`minikube`に関する内容のみを記載する。
+- apps/  
+  minikubeクラスタ内に展開される各APPを包括するディレクトリ。
+  `kubectl`全体に関する内容を記載する。各個別アプリについての内容を記載しない。
+- 各アプリケーション  
+  各アプリの内容を記載する。
 
 ---
 
-# Permission Policy
+## Permission Policy
 
-## Git Operations
+### Git Operations
 
 以下の Git 操作は必ず実行前にユーザーへ確認を取ること。
 
@@ -75,7 +81,7 @@ samples/
 
 ---
 
-## Allowed Without Approval
+### Allowed Without Approval
 
 Git 操作以外は基本的に自由に実行してよい。
 
@@ -100,7 +106,7 @@ Git 操作以外は基本的に自由に実行してよい。
 
 ---
 
-## Security Restrictions
+### Security Restrictions
 
 以下に該当する操作は実行しないこと。
 
@@ -114,7 +120,7 @@ Git 操作以外は基本的に自由に実行してよい。
 
 ---
 
-# Kubernetes Rules
+## Kubernetes Rules
 
 作成するサンプルは以下を遵守すること。
 
@@ -137,9 +143,10 @@ resources:
 
 ---
 
-# Validation
+## Validation
 
 変更後は可能な限り以下を実行する。
 
 ```bash
 kubectl apply --dry-run=client -f .
+```
