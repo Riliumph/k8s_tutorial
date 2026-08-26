@@ -30,6 +30,17 @@ $ minikube delete -p dev
 
 ## ダッシュボード
 
+`dashboard`の所有を確認する。
+
+```console
+$ minikube addons list
+|-----------------------------|--------------------------------|
+|         ADDON NAME          |           MAINTAINER           |
+|-----------------------------|--------------------------------|
+| dashboard                   | Kubernetes                     |
+...
+```
+
 ```console
 $ minikube dashboard -p dev
 🤔  Verifying dashboard health ...
