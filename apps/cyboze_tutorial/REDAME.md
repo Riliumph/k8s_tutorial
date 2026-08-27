@@ -23,70 +23,6 @@ NAME           READY   STATUS    RESTARTS   AGE
 my-first-pod   1/1     Running   0          15s
 ```
 
-詳細な情報は別途参照できる。
-
-```console
-$ kubectl describe pod my-first-pod 
-Name:             my-first-pod
-Namespace:        default
-Priority:         0
-Service Account:  default
-Node:             minikube/192.168.58.2
-Start Time:       Wed, 26 Aug 2026 08:32:53 +0000
-Labels:           component=nginx
-Annotations:      <none>
-Status:           Running
-IP:               10.244.0.4
-IPs:
-  IP:  10.244.0.4
-Containers:
-  nginx:
-    Container ID:   docker://793b9c35720712ab96158a1a8db30e9f2fe0cdfe3f00c68fa057c8d7edc27678
-    Image:          nginx:latest
-    Image ID:       docker-pullable://nginx@sha256:b34848eff6db786b6b1282d3a9c3fd0b5563dfb6d261df4923378b419e0d24f0
-    Port:           <none>
-    Host Port:      <none>
-    State:          Running
-      Started:      Wed, 26 Aug 2026 08:33:06 +0000
-    Ready:          True
-    Restart Count:  0
-    Limits:
-      cpu:     500m
-      memory:  256Mi
-    Requests:
-      cpu:        100m
-      memory:     128Mi
-    Environment:  <none>
-    Mounts:
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-stc8g (ro)
-Conditions:
-  Type                        Status
-  PodReadyToStartContainers   True 
-  Initialized                 True 
-  Ready                       True 
-  ContainersReady             True 
-  PodScheduled                True 
-Volumes:
-  kube-api-access-stc8g:
-    Type:                    Projected (a volume that contains injected data from multiple sources)
-    TokenExpirationSeconds:  3607
-    ConfigMapName:           kube-root-ca.crt
-    ConfigMapOptional:       <nil>
-    DownwardAPI:             true
-QoS Class:                   Burstable
-Node-Selectors:              <none>
-Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
-                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
-Events:
-  Type    Reason     Age   From               Message
-  ----    ------     ----  ----               -------
-  Normal  Scheduled  45s   default-scheduler  Successfully assigned default/my-first-pod to minikube
-  Normal  Pulling    45s   kubelet            Pulling image "nginx:latest"
-  Normal  Pulled     34s   kubelet            Successfully pulled image "nginx:latest" in 10.533s (10.533s including waiting). Image size: 161841009 bytes.
-  Normal  Created    33s   kubelet            Created container: nginx
-  Normal  Started    33s   kubelet            Started container nginx
-```
-
 ### Pod間通信
 
 ```console
@@ -196,4 +132,79 @@ nginx-replicaset-xw2k2   1/1     Running   0          5m16s
 
 ### ローリングアップデート
 
-アプリケーションの無停止更新を行う。
+アプリケーションの無停止更新を行う。  
+3台のnginxを同時に更新するとする。一気に3台のnginxを停止させてしまうとそのサービスはその間停止することになる。そこで一気にすべてのnginxを更新するのを止めて、徐々に切り替えていこうというのがローリングアップデートである。
+
+このローリングアップデート機能を有効にするには、Deploymentリソースを用いる。  
+
+> DeploymentリソースはReplicaSetリソースとかなり近い。  
+> ReplicaSetリソースにアップデート機能が追加されたものであり、Deploymentリソースは内部でReplicaSetリソースを使っている。
+> 結果、ドキュメントにあるように、ユーザーが直接ReplicaSetリソースを使う必要はない。
+
+```console
+$ kubectl apply -f nginx-deployment.yaml
+```
+
+デプロイされたイメージを確認する。
+
+```console
+ $ kubectl get pod -o 'custom-columns=NAME:.metadata.name,IMAGE:.spec.containers[*].image,STATUS:.status.phase'
+NAME                                IMAGE           STATUS
+bastion                             debian:stable   Running
+nginx-deployment-56789bbff8-c8jnx   nginx:1.20      Running
+nginx-deployment-56789bbff8-rtjt5   nginx:1.20      Running
+nginx-deployment-56789bbff8-wg4hl   nginx:1.20      Running
+```
+
+#### 無停止確認
+
+`nginx-deployment.yaml`の`nginx:1.20`を`nginx:1.30`に変更する。  
+このままデプロイしても無停止かどうかは分からない。  
+そこで、`bastion`podの中からnginxクラスタの管理サービスにリクエストを送り続ける。
+
+```console
+$ kubectl exec -it bastion -- bash
+root@bastion:/# while true; do curl -s -i my-first-service | grep -E 'HTTP|Server'; sleep 1; done
+Server: nginx/1.20.2
+HTTP/1.1 200 OK
+...
+```
+
+更新したdeploymentを適用する。
+
+```console
+$ kubectl apply -f nginx-deployment.yaml
+deployment.apps/nginx-deployment configured
+```
+
+```console
+$ kubectl get pod -o 'custom-columns=NAME:.metadata.name,IMAGE:.spec.containers[*].image,STATUS:.status.phase'
+NAME                                IMAGE        STATUS
+nginx-deployment-56789bbff8-dxrwg   nginx:1.20   Running
+nginx-deployment-56789bbff8-nmlr5   nginx:1.20   Running
+nginx-deployment-56789bbff8-v8npm   nginx:1.20   Running
+nginx-deployment-688ccf5cdf-ztj55   nginx:1.30   Pending
+```
+
+`1.30`が4つ目のpodとして立ち上がってpending状態であることが分かる。  
+1.30の1台作っては1.20の1台が消えていくことを繰り返す。  
+最終的には、以下の状態に落ち着く。
+
+```console
+$ kubectl get pod -o 'custom-columns=NAME:.metadata.name,IMAGE:.spec.containers[*].image,PHASE:.status.phase'
+NAME                                IMAGE        PHASE
+nginx-deployment-688ccf5cdf-rhk2p   nginx:1.30   Running
+nginx-deployment-688ccf5cdf-vrqwb   nginx:1.30   Running
+nginx-deployment-688ccf5cdf-ztj55   nginx:1.30   Running
+```
+
+curlの方も確認すると、サービス断になることなく1.20から1.30に繋がっていることが確認できる。
+
+```console
+root@bastion:/# while true; do curl -s -i my-first-service | grep -E 'HTTP|Server'; sleep 1; done
+Server: nginx/1.20.2
+HTTP/1.1 200 OK
+Server: nginx/1.30.4
+HTTP/1.1 200 OK
+```
+
