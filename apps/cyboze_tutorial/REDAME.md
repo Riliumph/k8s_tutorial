@@ -268,3 +268,13 @@ security features and capabilities please refer to
 </body>
 </html>
 ```
+
+WSL2やWindowsから行う場合は、さらに以下を行う。
+
+```console
+$ kubectl port-forward --address 0.0.0.0 svc/my-first-service 8080:80
+```
+
+ブラウザから以下のURLでアクセスする。
+
+<http://localhost:8080>
