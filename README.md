@@ -23,8 +23,16 @@ kubeconfig: Configured
 
 ## 環境の削除
 
+任意のクラスタを削除する。
+
 ```console
 $ minikube delete -p <profile-name>
+```
+
+すべてのクラスタを削除する。
+
+```console
+$ minikube delete --all --purge
 ```
 
 ## ダッシュボード

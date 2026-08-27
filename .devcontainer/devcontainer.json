@@ -10,7 +10,7 @@
 		}
 	},
 	"features": {
-		"ghcr.io/devcontainers/features/docker-in-docker:4.0.0": {
+		"ghcr.io/devcontainers/features/docker-in-docker:4.1.0": {
 			"version": "latest",
 			"moby": "false"
 		}
@@ -22,10 +22,14 @@
 	"runArgs": [
 		"--hostname",
 		"devcontainer",
-		// , "--gpus=all"
+		"-p",
+		"8080:8080",
+		// "--gpus=all"
 	],
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
+	"forwardPorts": [
+		8080
+	],
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "docker --version",
 	// Configure tool-specific properties.

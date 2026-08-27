@@ -6,6 +6,8 @@
         "true": true,
         "kubectl rollout": true,
         "kubectl describe": true,
-        "printf": true
+        "printf": true,
+        "ss": true,
+        "hostname": true
     }
 }
