@@ -6,10 +6,13 @@
 $ minikube start --driver=docker -p <profile-name>
 ```
 
+[driver](https://minikube.sigs.k8s.io/docs/drivers/)はこの中から選択できる。  
+もっとも既存環境に影響がないものがdockerだと判断して使っているに過ぎない。
+
 デフォルトでプロファイル名に`minikube`が付与される。  
 任意のプロファイル名をつけたい場合は`-p xxx`とする。
 
-状態確認
+## 状態確認
 
 ```console
 $ minikube status
@@ -29,7 +32,7 @@ kubeconfig: Configured
 $ minikube delete -p <profile-name>
 ```
 
-すべてのクラスタを削除する。
+すべてのクラスタを削除する。（イメージも捨てる）
 
 ```console
 $ minikube delete --all --purge
