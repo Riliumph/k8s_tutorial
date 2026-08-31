@@ -278,3 +278,46 @@ $ kubectl port-forward --address 0.0.0.0 svc/my-first-service 8080:80
 ブラウザから以下のURLでアクセスする。
 
 <http://localhost:8080>
+
+### Load Balancerの導入
+
+Node Portの代わりにLoad Balancerを導入する。
+まず、ingress層を有効にするため。
+
+```console
+$ minikube tunnel
+Status:
+        machine: minikube
+        pid: 165708
+        route: 10.96.0.0/12 -> 192.168.49.2
+        minikube: Running
+        services: [my-first-service]
+    errors: 
+                minikube: no errors
+                router: no errors
+                loadbalancer emulator: no errors
+```
+
+minikube環境である10.96.0.0/12が192.168.49.2で置き換えられた。  
+
+では、前準備が終わったので改めてデプロイする。
+
+```console
+$ kubectl apply -f apps/cyboze_tutorial/nginx-loadbalancer.yaml
+```
+
+`nginx-service.yaml`とtypeだけが変わったファイルなので上書き更新される。  
+今のserviceの状態を確認する。
+
+```console
+$ kubectl get svc
+NAME               TYPE           CLUSTER-IP      EXTERNAL-IP     PORT(S)        AGE
+kubernetes         ClusterIP      10.96.0.1       <none>          443/TCP        3h17m
+my-first-service   LoadBalancer   10.97.142.154   10.97.142.154   80:32056/TCP   3h15m
+```
+
+`TYPE`項目が`NodePort`から`LoadBalancer`に切り替わっていることが確認できる。  
+また、`minukube tunnel`を実行したことで`EXTERNAL-IP`が付与された。
+
+devcontainer環境内でのLoad Balancer導入では、底で割り振られるEXTERNAL-IPはあくまでdevcontainer内でしか使えない。  
+Windowsホストからブラウザで通信は確認できない。

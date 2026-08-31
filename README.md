@@ -62,3 +62,34 @@ $ minikube dashboard -p <profile-name>
 
 表示されたURLをブラウザで開く。  
 なお、フロントプロセスとして起動するのでctrl+cで終了すると、ページに繋がらなくなるので注意。
+
+## Load Balancer機能の有効化
+
+```console
+$ minikube tunnel
+Status:
+        machine: minikube
+        pid: 17112
+        route: 10.96.0.0/12 -> 192.168.49.2
+        minikube: Running
+        services: []
+    errors: 
+                minikube: no errors
+                router: no errors
+                loadbalancer emulator: no errors
+```
+
+内部処理的には`EXTERNAL-IP`を割り当てるだけである。  
+Load Balancerそのものを作っているわけではない。  
+
+```bash
+PC
+↓
+minikube tunnel が作る仮想入口
+↓
+Service
+↓
+Pod
+```
+
+クラウドではLoad Balancerに当たる`Service`の上段レイヤーを代替する仮想入口を作るだけである。
