@@ -1,0 +1,22 @@
+services:
+  # Update this to the name of the service you want to work with in your docker-compose.yml file
+  devcontainer:
+    build:
+      context: .
+      dockerfile: dockerfile
+    hostname: devcontainer
+    volumes:
+      # Update this to wherever you want VS Code to mount the folder of your project
+      - ../:/workspaces:cached
+        # AWS
+      - type: bind
+        source: ~/.aws
+        target: /home/vscode/.aws
+        read_only: true
+        # Git設定
+      - type: bind
+        source: ~/.gitconfig
+        target: /home/vscode/.gitconfig
+        read_only: true
+      # Overrides default command so things don't shut down after the process ends.
+    command: /bin/sh -c "while sleep 1000; do :; done"

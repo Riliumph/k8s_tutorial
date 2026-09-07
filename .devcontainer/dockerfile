@@ -35,6 +35,13 @@ RUN curl -fsSL "${HELMFILE_URL}" -o helmfile.tar.gz && \
     install -m 755 linux-amd64/helmfile ${BIN}/helmfile && \
     helmfile completion bash > ${COMPD}/helmfile
 
+ARG AWSCLI_VERSION=2.28.23
+ARG AWSCLI_URL=https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWSCLI_VERSION}.zip
+RUN curl -fsSL "${AWSCLI_URL}" -o awscliv2.zip && \
+    unzip -q awscliv2.zip && \
+    ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli && \
+    aws_completer > /etc/bash_completion.d/aws
+
 # hadolint
 ARG HADOLINT_URL="https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64"
 RUN curl -fsSL "${HADOLINT_URL}" -o hadolint && \
@@ -68,7 +75,9 @@ COPY --from=toolchain /usr/local/bin/helm /usr/local/bin/helm
 COPY --from=toolchain /etc/bash_completion.d/helm /etc/bash_completion.d/helm
 COPY --from=toolchain /usr/local/bin/helmfile /usr/local/bin/helmfile
 COPY --from=toolchain /etc/bash_completion.d/helmfile /etc/bash_completion.d/helmfile
-
+# AWS
+COPY --from=toolchain /usr/local/aws-cli /usr/local/aws-cli
+# hadolint
 COPY --from=toolchain /usr/local/bin/hadolint /usr/local/bin/hadolint
 # git
 COPY --from=toolchain /usr/share/doc/git/contrib/diff-highlight/diff-highlight /usr/local/bin/diff-highlight
