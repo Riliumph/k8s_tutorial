@@ -66,18 +66,11 @@ RUN DEBIAN_FRONTEND=noninteractive \
     && apt-get clean\
     && rm -rf /var/lib/apt/lists/*
 
-# k8s
-COPY --from=toolchain /usr/local/bin/kubectl /usr/local/bin/kubectl
-COPY --from=toolchain /etc/bash_completion.d/kubectl /etc/bash_completion.d/kubectl
-COPY --from=toolchain /usr/local/bin/minikube /usr/local/bin/minikube
-COPY --from=toolchain /etc/bash_completion.d/minikube /etc/bash_completion.d/minikube
-COPY --from=toolchain /usr/local/bin/helm /usr/local/bin/helm
-COPY --from=toolchain /etc/bash_completion.d/helm /etc/bash_completion.d/helm
-COPY --from=toolchain /usr/local/bin/helmfile /usr/local/bin/helmfile
-COPY --from=toolchain /etc/bash_completion.d/helmfile /etc/bash_completion.d/helmfile
-# AWS
+# tools
+# /usr/local/bin/awsは/usr/local/aws-cli/v2/current/bin/aws*へのシンボリックリンクである。
+# COPY --from=toolchain /usr/local/bin/aws /usr/local/bin/awsはシンボリックリンク先まで追ってコピーする挙動を取る。
+# そのため、マルチステージコンテナからコピーしたければ、/usr/local/bin全体をコピーするしかない。
+COPY --from=toolchain /usr/local/bin /usr/local/bin
 COPY --from=toolchain /usr/local/aws-cli /usr/local/aws-cli
-# hadolint
-COPY --from=toolchain /usr/local/bin/hadolint /usr/local/bin/hadolint
-# git
+COPY --from=toolchain /etc/bash_completion.d /etc/bash_completion.d
 COPY --from=toolchain /usr/share/doc/git/contrib/diff-highlight/diff-highlight /usr/local/bin/diff-highlight
