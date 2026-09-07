@@ -50,11 +50,20 @@ RUN curl -fsSL "${HADOLINT_URL}" -o hadolint && \
 WORKDIR /usr/share/doc/git/contrib/diff-highlight
 RUN make
 
+# =====================================================================================================
+
 FROM mcr.microsoft.com/devcontainers/base:2-debian12
 
+ARG HASHICORP_KEYRING_PATH=/usr/share/keyrings/hashicorp-archive-keyring.gpg
+ARG HASHICORP_APT_URL=https://apt.releases.hashicorp.com
+RUN curl -sSL "${HASHICORP_APT_URL}/gpg" | gpg --dearmor > "${HASHICORP_KEYRING_PATH}" &&\
+    VERSION_CODENAME=$(. /etc/os-release && echo "${VERSION_CODENAME}") &&\
+    echo "deb [signed-by=${HASHICORP_KEYRING_PATH}] ${HASHICORP_APT_URL} ${VERSION_CODENAME} main" > \
+    /etc/apt/sources.list.d/hashicorp.list
+
 RUN DEBIAN_FRONTEND=noninteractive \
-    apt-get -qq update\
-    && apt-get -y install --no-install-recommends \
+    apt-get -qq update &&\
+    apt-get -y install --no-install-recommends \
     # utilities
     peco\
     ripgrep\
@@ -63,6 +72,8 @@ RUN DEBIAN_FRONTEND=noninteractive \
     # network tools
     telnet\
     netcat-openbsd\
+    # IaC
+    terraform\
     && apt-get clean\
     && rm -rf /var/lib/apt/lists/*
 
