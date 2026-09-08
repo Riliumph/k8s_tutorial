@@ -6,6 +6,9 @@
 	"dockerComposeFile": [
 		"docker-compose.yaml"
 	],
+	"remoteEnv": {
+		"TF_BACKEND_BUCKET": "${localEnv:TF_BACKEND_BUCKET}"
+	},
 	"service": "devcontainer",
 	"workspaceFolder": "/workspaces",
 	"features": {
