@@ -14,28 +14,41 @@ S3バケットを設定する。
 
 ```console
 $ terraform init -backend-config=backend.hcl
-Initializing the backend...
-
-Successfully configured the backend "s3"! Terraform will automatically
-use this backend unless the backend configuration changes.
-
-Initializing provider plugins...
-- Finding hashicorp/aws versions matching "~> 5.0"...
-- Installing hashicorp/aws v5.100.0...
-- Installed hashicorp/aws v5.100.0 (signed by HashiCorp)
-
-Terraform has created a lock file .terraform.lock.hcl to record the provider
-selections it made above. Include this file in your version control repository
-so that Terraform can guarantee to make the same selections by default when
-you run "terraform init" in the future.
-
-Terraform has been successfully initialized!
-
-You may now begin working with Terraform. Try running "terraform plan" to see
-any changes that are required for your infrastructure. All Terraform commands
-should now work.
-
-If you ever set or change modules or backend configuration for Terraform,
-rerun this command to reinitialize your working directory. If you forget, other
-commands will detect it and remind you to do so if necessary.
 ```
+
+### デプロイ
+
+事前チェック
+
+```console
+$ terraform fmt
+$ terraform validate
+```
+
+現環境との差分チェックと適用。
+
+```console
+$ terraform plan
+$ terraform apply
+```
+
+> デプロイに10分ぐらいかかるので休憩に入って良い。
+
+### kubectlの接続
+
+`kubectl`でEKSを操作するには、`kubectl`にAPIサーバーの場所を教える必要がある。
+
+```console
+$ aws eks update-kubeconfig --region ap-northeast-1 --name sample-eks
+Added new context arn:aws:eks:ap-northeast-1:396765697248:cluster/sample-eks to /home/vscode/.kube/config
+```
+
+これで`kubectl`はAWSの接続先を認識できた。
+
+```console
+$ kubectl get nodes
+NAME                                           STATUS   ROLES    AGE   VERSION
+ip-10-0-2-92.ap-northeast-1.compute.internal   Ready    <none>   13m   v1.36.3-eks-cb19647
+```
+
+`kubectl`でAWS EKSに接続できた事がわかる。
