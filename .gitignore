@@ -7,3 +7,7 @@
 
 # devcontainer
 *-lock.json
+
+# terraform
+.terraform/
+*.hcl
