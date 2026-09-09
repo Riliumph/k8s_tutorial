@@ -17,8 +17,7 @@ terraform {
 # AWSのどのリージョンのAPIに接続するか
 # などを記述する。
 provider "aws" {
-  region  = var.region
-  profile = "default" # .aws/credentialのdefaultを使用
+  region = var.region
 
   # 全リソースに強制的に付与するタグ
   default_tags {
@@ -26,4 +25,19 @@ provider "aws" {
       owner = var.owner_name
     }
   }
+}
+
+# k8sプロバイダ
+data "aws_eks_cluster" "this" {
+  name = aws_eks_cluster.this.name
+}
+
+data "aws_eks_cluster_auth" "this" {
+  name = aws_eks_cluster.this.name
+}
+
+provider "kubernetes" {
+  host                   = data.aws_eks_cluster.this.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.this.certificate_authority[0].data)
+  token                  = data.aws_eks_cluster_auth.this.token
 }
