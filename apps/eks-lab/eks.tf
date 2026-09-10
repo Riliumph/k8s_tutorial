@@ -1,3 +1,11 @@
+locals {
+  public_subnet_ids = [
+    for k, v in var.subnet :
+    aws_subnet.this[k].id
+    if v.public
+  ]
+}
+
 resource "aws_iam_role" "eks_cluster" {
   name = "${var.cluster_name}-cluster-role"
 
@@ -23,10 +31,7 @@ resource "aws_eks_cluster" "this" {
   role_arn = aws_iam_role.eks_cluster.arn
 
   vpc_config {
-    subnet_ids = [
-      aws_subnet.public_a.id,
-      aws_subnet.public_c.id
-    ]
+    subnet_ids = local.public_subnet_ids
   }
 
   depends_on = [
@@ -70,10 +75,8 @@ resource "aws_eks_node_group" "this" {
 
   node_role_arn = aws_iam_role.nodegroup.arn
 
-  subnet_ids = [
-    aws_subnet.public_a.id,
-    aws_subnet.public_c.id
-  ]
+  subnet_ids = local.public_subnet_ids
+
 
   scaling_config {
     desired_size = 1

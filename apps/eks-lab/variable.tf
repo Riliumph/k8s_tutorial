@@ -28,29 +28,36 @@ variable "vpc_cidr" {
 # CIDRとの関係性を管理するためMAPで定義
 variable "subnet" {
   type = map(object({
-    az   = string
-    cidr = string
+    az     = string
+    cidr   = string
+    public = bool
   }))
   default = {
     public_a = {
-      az   = "a"
-      cidr = "10.0.10.0/24"
+      az     = "a"
+      cidr   = "10.0.10.0/24"
+      public = true
     }
+
     private_a = {
-      az   = "a"
-      cidr = "10.0.11.0/24"
+      az     = "a"
+      cidr   = "10.0.11.0/24"
+      public = false
     }
+
     public_c = {
-      az   = "c"
-      cidr = "10.0.20.0/24"
+      az     = "c"
+      cidr   = "10.0.20.0/24"
+      public = true
     }
+
     private_c = {
-      az   = "c"
-      cidr = "10.0.21.0/24"
+      az     = "c"
+      cidr   = "10.0.21.0/24"
+      public = false
     }
   }
 }
-
 variable "cluster_name" {
   type    = string
   default = "sample-eks"
