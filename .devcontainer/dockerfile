@@ -77,6 +77,7 @@ RUN DEBIAN_FRONTEND=noninteractive \
     && apt-get clean\
     && rm -rf /var/lib/apt/lists/*
 
+RUN terraform -install-autocomplete
 # tools
 # /usr/local/bin/awsは/usr/local/aws-cli/v2/current/bin/aws*へのシンボリックリンクである。
 # COPY --from=toolchain /usr/local/bin/aws /usr/local/bin/awsはシンボリックリンク先まで追ってコピーする挙動を取る。
