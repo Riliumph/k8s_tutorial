@@ -35,7 +35,7 @@ variable "subnet" {
   default = {
     public_a = {
       az     = "a"
-      cidr   = "10.0.10.0/24"
+      cidr   = "10.0.1.0/24"
       public = true
     }
 
@@ -47,7 +47,7 @@ variable "subnet" {
 
     public_c = {
       az     = "c"
-      cidr   = "10.0.20.0/24"
+      cidr   = "10.0.2.0/24"
       public = true
     }
 
