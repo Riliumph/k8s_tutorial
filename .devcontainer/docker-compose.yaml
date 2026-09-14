@@ -12,7 +12,6 @@ services:
       - type: bind
         source: ~/.aws
         target: /home/vscode/.aws
-        read_only: true
         # Git設定
       - type: bind
         source: ~/.gitconfig
