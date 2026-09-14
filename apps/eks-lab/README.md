@@ -55,8 +55,17 @@ ip-10-0-2-92.ap-northeast-1.compute.internal   Ready    <none>   13m   v1.36.3-e
 
 ### nginx への接続
 
+nginx直接ではなく、前段にいるLBを経由する。  
+そのため、LBのドメインを確認しよう。
+
 ```console
-$ curl http://ae618d9219b0443819ab64a48d76a144-510572437.ap-northeast-1.elb.amazonaws.com
+$ kubectl get service backend-nginx
+NAME            TYPE           CLUSTER-IP      EXTERNAL-IP                                                                    PORT(S)        AGE
+backend-nginx   LoadBalancer   172.20.23.237   acc0ab40dbb2246aeaad9c8ba4f01922-1496325170.ap-northeast-1.elb.amazonaws.com   80:32582/TCP   55s
+```
+
+```console
+$ curl http://${EXTERNAL-IP}
 <!DOCTYPE html>
 <html>
 <head>
