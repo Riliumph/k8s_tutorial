@@ -8,7 +8,6 @@
 	],
 	"remoteEnv": {
 		"TF_BACKEND_BUCKET": "${localEnv:TF_BACKEND_BUCKET}",
-		"AWS_MFA_ARN": "${localEnv:AWS_MFA_ARN}",
 	},
 	"service": "devcontainer",
 	"workspaceFolder": "/workspaces",
@@ -23,7 +22,7 @@
 		8080
 	],
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "echo 'source /workspaces/tools/aws_login.bash' >> ~/.bashrc",
+	// "postCreateCommand": "echo 'source /workspaces/tools/aws_login.bash' >> ~/.bashrc",
 	// Configure tool-specific properties.
 	"customizations": {
 		"vscode": {
