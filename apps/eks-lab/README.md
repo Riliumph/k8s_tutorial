@@ -2,6 +2,13 @@
 
 ## 使い方
 
+### awsへの接続
+
+```console
+$ aws login
+$ eval "$(aws configure export-credentials --format env)"
+```
+
 ### ローカルで使う場合
 
 ```console
