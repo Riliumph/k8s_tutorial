@@ -45,7 +45,9 @@ RUN curl -fsSL "${AWSCLI_URL}" -o awscliv2.zip && \
 ARG HADOLINT_URL="https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64"
 RUN curl -fsSL "${HADOLINT_URL}" -o hadolint && \
     install -m 755 hadolint /usr/local/bin/hadolint
-# diff-highlighta
+
+RUN echo 'complete -C /usr/bin/terraform terraform' > ${COMPD}/terraform
+# diff-highlight
 WORKDIR /usr/share/doc/git/contrib/diff-highlight
 RUN make
 
@@ -90,7 +92,6 @@ RUN sed -i -e 's/# ja_JP.UTF-8 UTF-8/ja_JP.UTF-8 UTF-8/' /etc/locale.gen \
 # /usr/local/bin/awsは/usr/local/aws-cli/v2/current/bin/aws*へのシンボリックリンクである。
 # COPY --from=toolchain /usr/local/bin/aws /usr/local/bin/awsはシンボリックリンク先まで追ってコピーする挙動を取る。
 # そのため、マルチステージコンテナからコピーしたければ、/usr/local/bin全体をコピーするしかない。
-RUN terraform -install-autocomplete
 COPY --from=toolchain /usr/local/bin /usr/local/bin
 COPY --from=toolchain /usr/local/aws-cli /usr/local/aws-cli
 COPY --from=toolchain /etc/bash_completion.d /etc/bash_completion.d
