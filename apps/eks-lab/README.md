@@ -6,6 +6,11 @@
 
 ```console
 $ aws login
+```
+
+terraformが認証情報を取れない場合、環境変数化しておくことで自動で参照してくれる。
+
+```console
 $ eval "$(aws configure export-credentials --format env)"
 ```
 
@@ -36,7 +41,7 @@ $ terraform validate
 
 ```console
 $ terraform plan
-$ terraform apply
+$ terraform apply -auto-approve
 ```
 
 > デプロイに10分ぐらいかかるので休憩に入って良い。
@@ -101,3 +106,32 @@ security features and capabilities please refer to
 </body>
 </html>
 ```
+
+## 問題点
+
+EKSにおいてServiceとはClassic Loadbalancerを指すようだ。
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-nginx
+spec:
+  type: LoadBalancer
+  (略)
+```
+
+```console
+ $ aws elb describe-load-balancers --region ap-northeast-1 --query 'LoadBalancerDescriptions[*].LoadBalancerNa
+me'
+[
+    "ab873fa2b79d64547a3f12278ac16228",
+    "a57d5d277504c4b24bc58b5679e8b4fa"
+]
+```
+
+> ALBたちは`aws elbv2`コマンドを用いる。
+
+### 解決策
+
+EKSでALBを使いたい場合はingressを構築する必要があるようだ。
