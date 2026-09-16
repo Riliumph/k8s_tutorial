@@ -3,42 +3,34 @@
 {
 	"name": "k8s_minikube",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"build": {
-		"dockerfile": "dockerfile",
-		"args": {
-			"HADOLINT_URL": "https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64",
-		}
+	"dockerComposeFile": [
+		"docker-compose.yaml"
+	],
+	"remoteEnv": {
+		"TF_BACKEND_BUCKET": "${localEnv:TF_BACKEND_BUCKET}",
 	},
+	"service": "devcontainer",
+	"workspaceFolder": "/workspaces",
 	"features": {
 		"ghcr.io/devcontainers/features/docker-in-docker:4.1.0": {
 			"version": "latest",
 			"moby": "false"
 		}
 	},
-	// Use this environment variable if you need to bind mount your local source code into a new container.
-	// "remoteEnv": {
-	// 	"LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
-	// },
-	"runArgs": [
-		"--hostname",
-		"devcontainer",
-		"-p",
-		"8080:8080",
-		// "--gpus=all"
-	],
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	"forwardPorts": [
 		8080
 	],
 	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "docker --version",
+	// "postCreateCommand": "echo 'source /workspaces/tools/aws_login.bash' >> ~/.bashrc",
 	// Configure tool-specific properties.
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"ms-kubernetes-tools.vscode-kubernetes-tools",
-				"streetsidesoftware.code-spell-checker",
 				"ms-azuretools.vscode-docker",
+				"ms-kubernetes-tools.vscode-kubernetes-tools",
+				"HashiCorp.terraform",
+				"streetsidesoftware.code-spell-checker",
 				"exiasr.hadolint",
 				"ionutvmi.path-autocomplete",
 				"shardulm94.trailing-spaces",

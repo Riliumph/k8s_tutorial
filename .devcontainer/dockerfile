@@ -35,19 +35,36 @@ RUN curl -fsSL "${HELMFILE_URL}" -o helmfile.tar.gz && \
     install -m 755 linux-amd64/helmfile ${BIN}/helmfile && \
     helmfile completion bash > ${COMPD}/helmfile
 
+ARG AWSCLI_URL=https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+RUN curl -fsSL "${AWSCLI_URL}" -o awscliv2.zip && \
+    unzip -q awscliv2.zip && \
+    ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli && \
+    echo 'complete -C /usr/local/bin/aws_completer aws' > "${COMPD}"/aws
+
 # hadolint
 ARG HADOLINT_URL="https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64"
 RUN curl -fsSL "${HADOLINT_URL}" -o hadolint && \
     install -m 755 hadolint /usr/local/bin/hadolint
-# diff-highlighta
+
+RUN echo 'complete -C /usr/bin/terraform terraform' > ${COMPD}/terraform
+# diff-highlight
 WORKDIR /usr/share/doc/git/contrib/diff-highlight
 RUN make
 
+# =====================================================================================================
+
 FROM mcr.microsoft.com/devcontainers/base:2-debian12
 
+ARG HASHICORP_KEYRING_PATH=/usr/share/keyrings/hashicorp-archive-keyring.gpg
+ARG HASHICORP_APT_URL=https://apt.releases.hashicorp.com
+RUN curl -sSL "${HASHICORP_APT_URL}/gpg" | gpg --dearmor > "${HASHICORP_KEYRING_PATH}" &&\
+    VERSION_CODENAME=$(. /etc/os-release && echo "${VERSION_CODENAME}") &&\
+    echo "deb [signed-by=${HASHICORP_KEYRING_PATH}] ${HASHICORP_APT_URL} ${VERSION_CODENAME} main" > \
+    /etc/apt/sources.list.d/hashicorp.list
+
 RUN DEBIAN_FRONTEND=noninteractive \
-    apt-get -qq update\
-    && apt-get -y install --no-install-recommends \
+    apt-get -qq update &&\
+    apt-get -y install --no-install-recommends \
     # utilities
     peco\
     ripgrep\
@@ -56,19 +73,26 @@ RUN DEBIAN_FRONTEND=noninteractive \
     # network tools
     telnet\
     netcat-openbsd\
+    # IaC
+    terraform\
     && apt-get clean\
     && rm -rf /var/lib/apt/lists/*
 
-# k8s
-COPY --from=toolchain /usr/local/bin/kubectl /usr/local/bin/kubectl
-COPY --from=toolchain /etc/bash_completion.d/kubectl /etc/bash_completion.d/kubectl
-COPY --from=toolchain /usr/local/bin/minikube /usr/local/bin/minikube
-COPY --from=toolchain /etc/bash_completion.d/minikube /etc/bash_completion.d/minikube
-COPY --from=toolchain /usr/local/bin/helm /usr/local/bin/helm
-COPY --from=toolchain /etc/bash_completion.d/helm /etc/bash_completion.d/helm
-COPY --from=toolchain /usr/local/bin/helmfile /usr/local/bin/helmfile
-COPY --from=toolchain /etc/bash_completion.d/helmfile /etc/bash_completion.d/helmfile
+# 日本語化
+ENV LANG=ja_JP.UTF-8
+ENV LANGUAGE=ja_JP:ja
+ENV LC_ALL=ja_JP.UTF-8
+ENV TZ=Asia/Tokyo
+RUN sed -i -e 's/# ja_JP.UTF-8 UTF-8/ja_JP.UTF-8 UTF-8/' /etc/locale.gen \
+    && locale-gen \
+    && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
+    && echo $TZ > /etc/timezone
 
-COPY --from=toolchain /usr/local/bin/hadolint /usr/local/bin/hadolint
-# git
+# tools
+# /usr/local/bin/awsは/usr/local/aws-cli/v2/current/bin/aws*へのシンボリックリンクである。
+# COPY --from=toolchain /usr/local/bin/aws /usr/local/bin/awsはシンボリックリンク先まで追ってコピーする挙動を取る。
+# そのため、マルチステージコンテナからコピーしたければ、/usr/local/bin全体をコピーするしかない。
+COPY --from=toolchain /usr/local/bin /usr/local/bin
+COPY --from=toolchain /usr/local/aws-cli /usr/local/aws-cli
+COPY --from=toolchain /etc/bash_completion.d /etc/bash_completion.d
 COPY --from=toolchain /usr/share/doc/git/contrib/diff-highlight/diff-highlight /usr/local/bin/diff-highlight
