@@ -4,6 +4,11 @@ locals {
     aws_subnet.this[k].id
     if v.public
   ]
+  private_subnet_ids = [
+    for k, v in var.subnet :
+    aws_subnet.this[k].id
+    if !v.public
+  ]
 }
 
 resource "aws_iam_role" "eks_cluster" {
@@ -31,13 +36,17 @@ resource "aws_eks_cluster" "this" {
   role_arn = aws_iam_role.eks_cluster.arn
 
   vpc_config {
-    subnet_ids = local.public_subnet_ids
+    # EKS Control Plainが使うENIの作成場所
+    subnet_ids = local.private_subnet_ids
   }
 
   depends_on = [
     aws_iam_role_policy_attachment.eks_cluster
   ]
 }
+
+# ======================================================
+# Worker Nodeの設定
 
 resource "aws_iam_role" "nodegroup" {
   name = "${var.cluster_name}-nodegroup-role"
@@ -77,7 +86,7 @@ resource "aws_eks_node_group" "this" {
 
   subnet_ids = local.public_subnet_ids
 
-
+  # EC2 Worker Nodeの数
   scaling_config {
     desired_size = 1
     min_size     = 0

@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: backend-nginx
 spec:
-  replicas: 2
+  replicas: 2 # Podの数
   selector:
     matchLabels:
       app: backend-nginx

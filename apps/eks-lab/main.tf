@@ -1,5 +1,5 @@
 resource "aws_vpc" "this" {
-  cidr_block           = "10.0.0.0/16"
+  cidr_block           = var.vpc_cidr
   enable_dns_hostnames = true
 
   tags = {
@@ -20,10 +20,14 @@ resource "aws_subnet" "this" {
   map_public_ip_on_launch = each.value.public
 }
 
+#===================================================================
+# Route Table
+
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.this.id
 }
 
+# Route Table Record
 resource "aws_route" "internet" {
   route_table_id         = aws_route_table.public.id
   destination_cidr_block = "0.0.0.0/0"
