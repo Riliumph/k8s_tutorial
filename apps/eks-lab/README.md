@@ -1,5 +1,9 @@
 # AWS EKS
 
+## 構成図
+
+![NW図](./img/art-eks.drawio.png)
+
 ## 使い方
 
 ### awsへの接続
