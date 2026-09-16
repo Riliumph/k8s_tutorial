@@ -40,6 +40,10 @@ resource "aws_eks_cluster" "this" {
     subnet_ids = local.private_subnet_ids
   }
 
+  tags = {
+    Name = var.cluster_name
+  }
+
   depends_on = [
     aws_iam_role_policy_attachment.eks_cluster
   ]
@@ -94,6 +98,10 @@ resource "aws_eks_node_group" "this" {
   }
 
   instance_types = ["t3.small"]
+
+  tags = {
+    Name = "${var.cluster_name}-worker-node"
+  }
 
   depends_on = [
     aws_iam_role_policy_attachment.worker_node,

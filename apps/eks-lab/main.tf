@@ -9,6 +9,9 @@ resource "aws_vpc" "this" {
 
 resource "aws_internet_gateway" "this" {
   vpc_id = aws_vpc.this.id
+  tags = {
+    Name = "eks-igw"
+  }
 }
 
 resource "aws_subnet" "this" {
@@ -18,6 +21,9 @@ resource "aws_subnet" "this" {
   cidr_block              = each.value.cidr
   availability_zone       = "${var.region}${each.value.az}"
   map_public_ip_on_launch = each.value.public
+  tags = {
+    Name = each.value.public ? "eks-pub-subnet-${each.value.az}" : "eks-pri-subnet-${each.value.az}"
+  }
 }
 
 #===================================================================
@@ -25,6 +31,9 @@ resource "aws_subnet" "this" {
 
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.this.id
+  tags = {
+    Name = "eks-public-rt"
+  }
 }
 
 # Route Table Record
