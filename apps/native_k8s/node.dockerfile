@@ -49,11 +49,12 @@ RUN apt-get update && \
     && apt-get clean\
     && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p /etc/containerd && \
-    containerd config default > /etc/containerd/config.toml
-
 # 意図しないアップグレードの防止
 RUN apt-mark hold kubelet kubeadm kubectl
+
+# RUN mkdir -p /etc/containerd && \
+# containerd config default > /etc/containerd/config.toml
+COPY /etc/containerd/config.toml /etc/containerd/config.toml
 
 # bashではなくsystemdを起動
 CMD ["/sbin/init"]
