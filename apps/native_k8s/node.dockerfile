@@ -6,13 +6,20 @@ ENV DEBIAN_FRONTEND=noninteractive
 #
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
+    # network
     curl \
-    wget \
-    vim \
-    sudo \
+    dnsutils \
+    netcat-openbsd \
+    net-tools \
     iproute2 \
     iputils-ping \
-    net-tools \
+    tcpdump \
+    traceroute \
+    tshark \
+    wget \
+    # util
+    vim \
+    sudo \
     procps \
     ca-certificates \
     gnupg \
