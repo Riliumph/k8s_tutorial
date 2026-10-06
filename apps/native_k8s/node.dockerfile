@@ -44,6 +44,8 @@ RUN apt-get update && \
     kubeadm \
     kubectl \
     containerd \
+    systemd \
+    systemd-sysv \
     && apt-get clean\
     && rm -rf /var/lib/apt/lists/*
 
@@ -53,4 +55,5 @@ RUN mkdir -p /etc/containerd && \
 # 意図しないアップグレードの防止
 RUN apt-mark hold kubelet kubeadm kubectl
 
-CMD ["/bin/bash"]
+# bashではなくsystemdを起動
+CMD ["/sbin/init"]
