@@ -17,6 +17,8 @@ RUN apt-get update && \
     traceroute \
     tshark \
     wget \
+    # kernel
+    kmod \
     # util
     vim \
     sudo \
@@ -54,7 +56,9 @@ RUN apt-mark hold kubelet kubeadm kubectl
 
 # RUN mkdir -p /etc/containerd && \
 # containerd config default > /etc/containerd/config.toml
-COPY /etc/containerd/config.toml /etc/containerd/config.toml
+COPY etc/containerd/config.toml /etc/containerd/config.toml
+COPY etc/modules-load.d/k8s.conf /etc/modules-load.d/k8s.conf
+COPY etc/sysctl.d/k8s.conf /etc/sysctl.d/k8s.conf
 
 # bashではなくsystemdを起動
 CMD ["/sbin/init"]
