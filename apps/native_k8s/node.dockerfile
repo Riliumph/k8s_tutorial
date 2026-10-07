@@ -21,6 +21,7 @@ RUN apt-get update && \
     kmod \
     # util
     vim \
+    jq \
     sudo \
     procps \
     ca-certificates \
@@ -46,8 +47,11 @@ RUN apt-get update && \
     kubeadm \
     kubectl \
     containerd \
+    # require k8s node
     systemd \
     systemd-sysv \
+    conntrack \
+    ethtool \
     && apt-get clean\
     && rm -rf /var/lib/apt/lists/*
 
