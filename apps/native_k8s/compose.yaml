@@ -7,6 +7,10 @@ services:
     privileged: true
     tty: true
     stdin_open: true
+    volumes:
+      - type: bind
+        source: ./overlayfs
+        target: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs
     networks:
       k8s-net:
         ipv4_address: 172.20.0.10
@@ -19,6 +23,10 @@ services:
     privileged: true
     tty: true
     stdin_open: true
+    volumes:
+      - type: bind
+        source: ./overlayfs
+        target: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs
     networks:
       k8s-net:
         ipv4_address: 172.20.0.11
@@ -31,6 +39,10 @@ services:
     privileged: true
     tty: true
     stdin_open: true
+    volumes:
+      - type: bind
+        source: ./overlayfs
+        target: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs
     networks:
       k8s-net:
         ipv4_address: 172.20.0.12

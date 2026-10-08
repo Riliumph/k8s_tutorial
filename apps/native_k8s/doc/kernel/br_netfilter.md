@@ -20,7 +20,7 @@ k8sノード上では、Pod同士の通信やCNIの内部処理についてはLi
 
 | 概要 | bridge-utils(brctl) | iproute2(ip/bridge) |
 | :----------------- | :------------------------ | :------------------ |
-| ブリッジ追加 | `brctl addbr <bridge>` | `ip link add <bridge> type bridge` |
+| ブリッwジ追加 | `brctl addbr <bridge>` | `ip link add <bridge> type bridge` |
 | ブリッジ削除 | `brctl delbr <bridge>` | `ip link del <bridge>` |
 | IF追加 | `brctl addif <bridge> <if>` | `ip link set dev <if> master <bridge>` |
 | IF削除 | `brctl delif <bridge> <if>` | `ip link set dev <if> nomaster` |
