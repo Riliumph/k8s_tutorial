@@ -63,9 +63,11 @@ RUN apt-mark hold kubelet kubeadm kubectl
 COPY etc/containerd/config.toml /etc/containerd/config.toml
 COPY etc/modules-load.d/k8s.conf /etc/modules-load.d/k8s.conf
 COPY etc/sysctl.d/k8s.conf /etc/sysctl.d/k8s.conf
+# COPY config_map/ /
+COPY config_map /etc/kubernetes/config_map
 
 # root use kubectl
 ENV KUBECONFIG=/etc/kubernetes/admin.conf
 
-# bashではなくsystemdを起動
+# bashではなくsystemdを起動(/tmpの初期化実行)
 CMD ["/sbin/init"]
