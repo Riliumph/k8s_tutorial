@@ -50,3 +50,42 @@ Oct 21 06:06:23 k8s-worker1 kubelet[569]: E1021 06:06:23.434253     569 kubelet.
 
 PodSandboxを実行使徒用としたが、すでにサンドボックス名が使われていて失敗しているのが分かる。  
 その結果が`Network plugin returns error`である。こっちが原因ではない。
+
+## 原因
+
+原因はすべてのコンテナでoverlayFSが同じホストをマウントしていたこと。  
+これにより、`k8s-master`が書き込んだ設定を`k8s-worker`が参照できてしまい、`k8s-worker`が知り得ない情報を知ってしまっていた。
+
+```yaml
+# 一部抜粋
+services:
+  k8s-master:
+    volumes:
+      - type: bind
+        source: ./overlayfs/
+        target: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs
+      - type: bind
+        source: ./config_map
+        target: /etc/kubernetes/config_map
+    networks:
+      k8s-net:
+        ipv4_address: 172.20.0.10
+
+  k8s-worker1:
+    volumes:
+      - type: bind
+        source: ./overlayfs
+        target: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs
+    networks:
+      k8s-net:
+        ipv4_address: 172.20.0.11
+
+  k8s-worker2:
+    volumes:
+      - type: bind
+        source: ./overlayfs
+        target: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs
+    networks:
+      k8s-net:
+        ipv4_address: 172.20.0.12
+```
