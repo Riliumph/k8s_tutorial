@@ -9,7 +9,7 @@ services:
     stdin_open: true
     volumes:
       - type: bind
-        source: ./overlayfs
+        source: ./overlayfs/control_plane
         target: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs
       - type: bind
         source: ./config_map
@@ -28,7 +28,7 @@ services:
     stdin_open: true
     volumes:
       - type: bind
-        source: ./overlayfs
+        source: ./overlayfs/worker1
         target: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs
     networks:
       k8s-net:
@@ -44,7 +44,7 @@ services:
     stdin_open: true
     volumes:
       - type: bind
-        source: ./overlayfs
+        source: ./overlayfs/worker2
         target: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs
     networks:
       k8s-net:
