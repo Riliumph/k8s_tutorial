@@ -65,6 +65,10 @@ COPY etc/modules-load.d/k8s.conf /etc/modules-load.d/k8s.conf
 COPY etc/sysctl.d/k8s.conf /etc/sysctl.d/k8s.conf
 # COPY config_map/ /
 COPY config_map /etc/kubernetes/config_map
+## Systemd(systemctl enable相当の処理）
+# systemctl enable k8s-bootstrap
+COPY etc/systemd/k8s-bootstrap.service /etc/systemd/system/
+RUN ln -s /etc/systemd/system/k8s-bootstrap.service /etc/systemd/system/multi-user.target.wants/k8s-bootstrap.service
 
 # root use kubectl
 ENV KUBECONFIG=/etc/kubernetes/admin.conf
