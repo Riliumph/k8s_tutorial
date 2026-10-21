@@ -1,0 +1,21 @@
+---
+apiVersion: kubeadm.k8s.io/v1beta4
+kind: InitConfiguration
+
+localAPIEndpoint:
+  # docker定義のipv4_address
+  advertiseAddress: 172.20.0.10
+
+---
+apiVersion: kubeadm.k8s.io/v1beta4
+kind: ClusterConfiguration
+
+networking:
+  # Flannel CNI定義のPOD CIDR
+  podSubnet: 10.244.0.0/16
+  # ClusterIP用ネットワーク
+  serviceSubnet: 10.96.0.0/12
+
+etcd:
+  local:
+    dataDir: /var/lib/etcd

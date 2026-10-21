@@ -11,6 +11,9 @@ services:
       - type: bind
         source: ./overlayfs
         target: /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs
+      - type: bind
+        source: ./config_map
+        target: /etc/kubernetes/config_map
     networks:
       k8s-net:
         ipv4_address: 172.20.0.10
