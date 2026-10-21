@@ -71,10 +71,19 @@ RUN DEBIAN_FRONTEND=noninteractive \
     silversearcher-ag\
     vim\
     # network tools
-    telnet\
-    netcat-openbsd\
-    # IaC
+    curl \
+    dnsutils \
+    netcat-openbsd \
+    net-tools \
+    iproute2 \
+    iputils-ping \
+    tcpdump \
+    traceroute \
+    tshark \
+    wget \
+    # IaC`
     terraform\
+    ansible \
     && apt-get clean\
     && rm -rf /var/lib/apt/lists/*
 
