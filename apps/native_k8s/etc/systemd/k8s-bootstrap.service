@@ -1,0 +1,14 @@
+# /etc/systemd/system/k8s-bootstrap.service
+
+[Unit]
+Description=Kubernetes Bootstrap
+After=containerd.service kubelet.service
+Wants=containerd.service kubelet.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/k8s/init-master.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

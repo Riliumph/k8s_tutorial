@@ -14,6 +14,9 @@ services:
       - type: bind
         source: ./config_map
         target: /etc/kubernetes/config_map
+      - type: bind
+        source: ./opt/k8s
+        target: /opt/k8s
     networks:
       k8s-net:
         ipv4_address: 172.20.0.10
